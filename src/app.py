@@ -14,7 +14,7 @@ def lambda_handler(event, context):
   logging.info(f"## Loaded table name from environemt variable DDB_TABLE: {table}")
   logging.info(f"## Payload format: {event["version"]}")
   logging.info(f"## Base64Encoded: {event["isBase64Encoded"]}")
-  if event.get("body") and event.get("body") != {}:
+  if event.get("body") or event.get("body") != {}:
       item = json.loads(base64.b64decode(event['body']).decode('utf-8')
                         if event["isBase64Encoded"]
                         else event['body'])
