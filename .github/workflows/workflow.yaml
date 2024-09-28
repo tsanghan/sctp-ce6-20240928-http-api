@@ -26,7 +26,7 @@ jobs:
       uses: opentofu/setup-opentofu@v1.0.4
 
     - name: Tofu fmt
-      run: tofu fmt --recursive
+      run: tofu fmt --recursive --check
 
     - name: Tofu Init
       run: tofu init
