@@ -178,11 +178,60 @@ resource "aws_lambda_permission" "api_gw" {
 }
 
 #========================================================================
+// Route53
+#========================================================================
+
+data "aws_route53_zone" "zone" {
+  name = "sctp-sandbox.com"
+}
+
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "~> 4.0"
+
+  domain_name       = "${local.name_prefix}.sctp-sandbox.com"
+  zone_id           = data.aws_route53_zone.zone.zone_id
+  validation_method = "DNS"
+}
+
+resource "aws_apigatewayv2_api_mapping" "example" {
+  api_id      = aws_apigatewayv2_api.http_api.id
+  domain_name = aws_apigatewayv2_domain_name.http_api.id
+  stage       = aws_apigatewayv2_stage.default.id
+}
+
+resource "aws_apigatewayv2_domain_name" "http_api" {
+  domain_name = "${local.name_prefix}.sctp-sandbox.com"
+
+  domain_name_configuration {
+    certificate_arn = module.acm.acm_certificate_arn
+    endpoint_type   = "REGIONAL"
+    security_policy = "TLS_1_2"
+  }
+}
+
+resource "aws_route53_record" "http-api" {
+  zone_id = data.aws_route53_zone.zone.zone_id
+  name    = "${local.name_prefix}.sctp-sandbox.com"
+  type    = "A"
+  ttl     = 300
+  records = [join(",", data.dns_a_record_set.http_api.addrs)]
+}
+
+data "dns_a_record_set" "http_api" {
+  host = trim(aws_apigatewayv2_api.http_api.api_endpoint, "https://")
+}
+
+#========================================================================
 // Output
 #========================================================================
 
 output "api_gateway_url" {
   value = aws_apigatewayv2_api.http_api.api_endpoint
+}
+
+output "http_api_addrs" {
+  value = "${join(",", data.dns_a_record_set.http_api.addrs)}"
 }
 
 output "name_prefix" {
