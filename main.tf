@@ -176,3 +176,11 @@ resource "aws_lambda_permission" "api_gw" {
 
   source_arn = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
 }
+
+#========================================================================
+// Output
+#========================================================================
+
+output "api_gateway_url" {
+  value = aws_apigatewayv2_api.http_api.api_endpoint
+}
