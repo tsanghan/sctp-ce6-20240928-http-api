@@ -184,3 +184,7 @@ resource "aws_lambda_permission" "api_gw" {
 output "api_gateway_url" {
   value = aws_apigatewayv2_api.http_api.api_endpoint
 }
+
+output "name_prefix" {
+  value = local.name_prefix
+}
