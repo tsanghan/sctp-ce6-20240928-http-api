@@ -2,6 +2,7 @@ import boto3
 import os
 import json
 import logging
+import base64
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -12,7 +13,8 @@ def lambda_handler(event, context):
   table = os.environ.get('DDB_TABLE')
   logging.info(f"## Loaded table name from environemt variable DDB_TABLE: {table}")
   if event["body"]:
-      item = json.loads(event["body"])
+      # item = json.loads(event["body"])
+      item = json.loads(base64.b64decode(event['body']).decode('utf-8'))
       logging.info(f"## Received payload: {item}")
       year = str(item["year"])
       title = str(item["title"])
