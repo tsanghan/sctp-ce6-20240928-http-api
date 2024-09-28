@@ -12,10 +12,8 @@ dynamodb_client = boto3.client('dynamodb')
 def lambda_handler(event, context):
   table = os.environ.get('DDB_TABLE')
   logging.info(f"## Loaded table name from environemt variable DDB_TABLE: {table}")
-  if event["body"]:
-      logging.info(f"## Payload format: {event["version"]}")
-      logging.info(f"## Base64Encoded: {event["isBase64Encoded"]}")
-      # item = json.loads(event["body"])
+  if event["body"] and event["body"] != {}:
+      logging.info(f"## Payload format: {event["version"]}, ## Base64Encoded: {event["isBase64Encoded"]}")
       item = json.loads(base64.b64decode(event['body']).decode('utf-8')
                         if event["isBase64Encoded"]
                         else event['body'])
