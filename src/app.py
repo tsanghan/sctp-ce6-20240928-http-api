@@ -13,6 +13,7 @@ def lambda_handler(event, context):
   table = os.environ.get('DDB_TABLE')
   logging.info(f"## Loaded table name from environemt variable DDB_TABLE: {table}")
   if event["body"]:
+      logging.info(f"## Received payload: {event["body"]}")
       # item = json.loads(event["body"])
       item = json.loads(base64.b64decode(event['body']).decode('utf-8'))
       logging.info(f"## Received payload: {item}")
