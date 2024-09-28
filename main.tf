@@ -37,7 +37,7 @@ resource "aws_lambda_function" "http_api_lambda" {
   filename         = data.archive_file.lambda_zip.output_path
   function_name    = "${local.name_prefix}-lambda"
   description      = "Lambda function to write to dynamodb"
-  runtime          = "python3.8"
+  runtime          = "python3.12"
   handler          = "app.lambda_handler"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   role             = aws_iam_role.lambda_exec.arn
