@@ -210,16 +210,16 @@ resource "aws_apigatewayv2_domain_name" "http_api" {
   }
 }
 
-resource "aws_route53_record" "http-api" {
-  zone_id = data.aws_route53_zone.zone.zone_id
-  name    = "${local.name_prefix}.sctp-sandbox.com"
+resource "aws_route53_record" "example" {
+  name    = aws_apigatewayv2_domain_name.http_api.domain_name
   type    = "A"
-  ttl     = 300
-  records = [join(",", data.dns_a_record_set.http_api.addrs)]
-}
+  zone_id = data.aws_route53_zone.zone.zone_id
 
-data "dns_a_record_set" "http_api" {
-  host = trim(aws_apigatewayv2_api.http_api.api_endpoint, "https://")
+  alias {
+    name                   = aws_apigatewayv2_domain_name.http_api.domain_name_configuration[0].target_domain_name
+    zone_id                = aws_apigatewayv2_domain_name.http_api.domain_name_configuration[0].hosted_zone_id
+    evaluate_target_health = false
+  }
 }
 
 #========================================================================
@@ -228,10 +228,6 @@ data "dns_a_record_set" "http_api" {
 
 output "api_gateway_url" {
   value = aws_apigatewayv2_api.http_api.api_endpoint
-}
-
-output "http_api_addrs" {
-  value = "${join(",", data.dns_a_record_set.http_api.addrs)}"
 }
 
 output "name_prefix" {
