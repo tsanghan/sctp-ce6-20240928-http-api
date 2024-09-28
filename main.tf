@@ -1,7 +1,8 @@
 data "aws_caller_identity" "current" {}
 
 locals {
-  name_prefix = "${split("/", "${data.aws_caller_identity.current.arn}")[1]}-httpapi"
+  # name_prefix = "${split("/", "${data.aws_caller_identity.current.arn}")[1]}-httpapi"
+  name_prefix = format("%s-httpapi", split("/", data.aws_caller_identity.current.arn)[1])
 }
 
 resource "aws_dynamodb_table" "table" {
@@ -150,9 +151,9 @@ resource "aws_apigatewayv2_stage" "default" {
 resource "aws_apigatewayv2_integration" "apigw_lambda" {
   api_id = aws_apigatewayv2_api.http_api.id
 
-  integration_uri    = aws_lambda_function.http_api_lambda.invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
+  integration_uri        = aws_lambda_function.http_api_lambda.invoke_arn
+  integration_type       = "AWS_PROXY"
+  integration_method     = "POST"
   payload_format_version = "2.0"
 }
 
